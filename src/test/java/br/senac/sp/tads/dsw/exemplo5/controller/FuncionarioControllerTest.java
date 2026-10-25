@@ -1,5 +1,6 @@
 package br.senac.sp.tads.dsw.exemplo5.controller;
 
+import br.senac.sp.tads.dsw.exemplo5.dto.FuncionarioRequestDTO;
 import br.senac.sp.tads.dsw.exemplo5.model.Departamento;
 import br.senac.sp.tads.dsw.exemplo5.model.Funcionario;
 import br.senac.sp.tads.dsw.exemplo5.repository.DepartamentoRepository;
@@ -51,13 +52,10 @@ class FuncionarioControllerTest {
 
   @Test
   void deveCriarFuncionarioComSucesso() throws Exception {
-    Funcionario funcionario = new Funcionario();
-    funcionario.setNome("Ana Souza");
-    funcionario.setDataContratacao(LocalDate.now());
-    funcionario.setTrabalhoRemoto(true);
-    funcionario.setDepartamento(departamentoPadrao);
+    FuncionarioRequestDTO dto = new FuncionarioRequestDTO("Ana Souza", LocalDate.now(), true,
+        departamentoPadrao.getId());
 
-    String jsonRequisicao = objectMapper.writeValueAsString(funcionario);
+    String jsonRequisicao = objectMapper.writeValueAsString(dto);
 
     mockMvc.perform(post("/api/funcionarios")
         .contentType(MediaType.APPLICATION_JSON)
@@ -69,13 +67,10 @@ class FuncionarioControllerTest {
 
   @Test
   void deveRetornarErro400AoCriarFuncionarioComDataFutura() throws Exception {
-    Funcionario funcionario = new Funcionario();
-    funcionario.setNome("Carlos Silva");
-    funcionario.setDataContratacao(LocalDate.now().plusDays(10));
-    funcionario.setTrabalhoRemoto(false);
-    funcionario.setDepartamento(departamentoPadrao);
+    FuncionarioRequestDTO dto = new FuncionarioRequestDTO("Carlos Silva", LocalDate.now().plusDays(10), false,
+        departamentoPadrao.getId());
 
-    String jsonRequisicao = objectMapper.writeValueAsString(funcionario);
+    String jsonRequisicao = objectMapper.writeValueAsString(dto);
 
     mockMvc.perform(post("/api/funcionarios")
         .contentType(MediaType.APPLICATION_JSON)
@@ -120,8 +115,8 @@ class FuncionarioControllerTest {
     funcionario.setDepartamento(departamentoPadrao);
     Funcionario funcionarioSalvo = funcionarioRepository.save(funcionario);
 
-    funcionarioSalvo.setTrabalhoRemoto(true);
-    String jsonAtualizado = objectMapper.writeValueAsString(funcionarioSalvo);
+    FuncionarioRequestDTO dto = new FuncionarioRequestDTO("Eduardo", LocalDate.now(), true, departamentoPadrao.getId());
+    String jsonAtualizado = objectMapper.writeValueAsString(dto);
 
     mockMvc.perform(put("/api/funcionarios/" + funcionarioSalvo.getId())
         .contentType(MediaType.APPLICATION_JSON)
